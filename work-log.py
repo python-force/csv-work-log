@@ -3,6 +3,8 @@ import time
 
 from task import AddTask, SearchTask
 
+CHOICES = {1: "AddTask", 2: "SearchTask", 3: "Quit"}
+
 def clear_screen():
     """
     Clear screen
@@ -48,9 +50,11 @@ if __name__ == '__main__':
         # validation if the input is a number (int)
         if isinstance(i, int):
 
-            AddTask().add_new_entry()
-            print("Job done.")
-            break
+
+            if i == 2:
+                SearchTask()
+                print("Job done.")
+                break
 
         else:
             # The selection is not a number, delay for 2 secs

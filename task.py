@@ -36,5 +36,33 @@ class AddTask(Task):
 
 class SearchTask(Task):
 
-    def search_existing_entries(self):
-        pass
+    SEARCH_CHOICES = {1: "Date", 2: "Time Spent", 3: "Exact Match", 4: "Pattern"}
+
+    def __init__(self, selection = 0):
+        self.selection = input("Which search you would like to perform?: ")
+        try:
+            search_selection = int(self.selection)
+        except ValueError:
+            print("Your selection is invalid, please try again")
+            SearchTask()
+        else:
+            if search_selection == 1:
+                self.search_by_date()
+            elif search_selection == 2:
+                self.search_by_time_spent()
+            elif search_selection == 3:
+                self.search_by_exact_match()
+            elif search_selection == 4:
+                 self.search_by_patter()
+
+    def search_by_date(self):
+        print("date")
+
+    def search_by_time_spent(self):
+        print("spent")
+
+    def search_by_exact_match(self):
+        print("match")
+
+    def search_by_patter(self):
+        print("pattern")
