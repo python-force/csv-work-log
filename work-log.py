@@ -1,6 +1,8 @@
 import os
 import time
 
+from task import AddTask, SearchTask
+
 def clear_screen():
     """
     Clear screen
@@ -25,7 +27,7 @@ def job_selected():
 def check_selection(selection):
     """
     Validation of the user's choice of the job
-    :param enc:
+    :param selection:
     :return:
     """
     try:
@@ -46,6 +48,7 @@ if __name__ == '__main__':
         # validation if the input is a number (int)
         if isinstance(i, int):
 
+            AddTask().add_new_entry()
             print("Job done.")
             break
 
