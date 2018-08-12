@@ -1,5 +1,6 @@
 import csv
 import re
+import os
 
 class Task:
     filename = "work-log.csv"
@@ -7,12 +8,17 @@ class Task:
 
 class AddTask(Task):
 
+    id = 0
+
     def check_file_is_empty(self, filename):
         with open(filename, newline='') as csvfile:
             task_reader = csv.reader(csvfile, delimiter=',')
             rows = list(task_reader)
             if len(rows) == 1 and rows[0] == []:
+                self.id = 1
                 return True
+            else:
+                self.id = int(rows[-1][0])
 
     def add_new_entry(self):
 
@@ -23,18 +29,27 @@ class AddTask(Task):
 
 
         with open('work-log.csv', 'a') as csvfile:
-            field_names = ['Task Date', 'Task Title', 'Time Spent', 'Task Notes']
+            field_names = ['ID', 'Task Date', 'Task Title', 'Time Spent', 'Task Notes']
             task_writer = csv.DictWriter(csvfile, fieldnames=field_names)
 
             if self.check_file_is_empty(self.filename):
                 task_writer.writeheader()
+                task_writer.writerow({
+                    'ID': self.id,
+                    'Task Date': task_date,
+                    'Task Title': task_title,
+                    'Time Spent': task_time_spent,
+                    'Task Notes': task_notes
+                })
+            else:
+                task_writer.writerow({
+                    'ID': self.id + 1,
+                    'Task Date': task_date,
+                    'Task Title': task_title,
+                    'Time Spent': task_time_spent,
+                    'Task Notes': task_notes
+                })
 
-            task_writer.writerow({
-                'Task Date': task_date,
-                'Task Title': task_title,
-                'Time Spent': task_time_spent,
-                'Task Notes': task_notes
-            })
 
 
 class SearchTask(Task):
@@ -56,32 +71,76 @@ class SearchTask(Task):
             elif search_selection == 3:
                 self.search_by_exact_match()
             elif search_selection == 4:
-                 self.search_by_patter()
+                 self.search_by_pattern()
+            else:
+                print("Your selection is invalid, please try again")
+                SearchTask()
 
-    def show_results(self, data_dict):
-        print(data_dict)
-        print(len(data_dict))
+    def clear_screen(self):
+        """
+        Clear screen
+        :return:
+        """
+        if os.system == "nt":
+            os.system('cls')
+        else:
+            os.system('clear')
+
+    def show_results(self, data_dict, message):
+        self.clear_screen()
+        self.message = message
+        step = 0
+        if message != "":
+            print("Your selection was invalid please try again. ")
+        for index, record in data_dict.items():
+            for task_header, data in record.items():
+                if task_header != "ID":
+                    print(task_header + ": " + data)
+            print("Results " + str(step+1) + " of " + str(len(data_dict)))
+            step += 1
+            if step == len(data_dict):
+                action = input("Delete, Edit, Return to the Menu ")
+            else:
+                action = input("Next, Delete, Edit, Return to the Menu ")
+
+            if action == "n" and step < len(data_dict):
+                self.clear_screen()
+                continue
+            if action == "n" and step >= len(data_dict):
+                self.clear_screen()
+                SearchTask()
+            elif action == "r":
+                self.clear_screen()
+                SearchTask()
+            else:
+                message = "Your selection was invalid please try again: "
+                self.show_results(data_dict, message)
 
     def search_by_date(self):
         print("date")
 
     def search_by_time_spent(self):
-        data_dict = {}
-        x = 0
-        with open(self.filename, newline='') as csvfile:
-            task_reader = csv.DictReader(csvfile, delimiter=',')
-            for row in task_reader:
-                for key, value in row.items():
-                    if key == " Time Spent":
-                        found = re.search(r'18', row[key])
-                        if found:
-                            data_dict[x] = row
-                            x += 1
-
-        self.show_results(data_dict)
+        search_time = input("What time you looking for?: ")
+        try:
+            int(search_time)
+        except:
+            print("Your selection is not a number, please try again: ")
+            self.search_by_time_spent()
+        else:
+            data_dict = {}
+            with open(self.filename, newline='') as csvfile:
+                task_reader = csv.DictReader(csvfile, delimiter=',')
+                for row in task_reader:
+                    for key, value in row.items():
+                        if key == "Time Spent":
+                            found = re.search(search_time, row[key])
+                            if found:
+                                data_dict[row['ID']] = row
+            message = ""
+            self.show_results(data_dict, message)
 
     def search_by_exact_match(self):
         print("match")
 
-    def search_by_patter(self):
+    def search_by_pattern(self):
         print("pattern")

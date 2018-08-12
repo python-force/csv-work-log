@@ -50,10 +50,12 @@ if __name__ == '__main__':
         # validation if the input is a number (int)
         if isinstance(i, int):
 
-
-            if i == 2:
+            if i == 1:
+                AddTask().add_new_entry()
+                print("Record successfully added.")
+                break
+            elif i == 2:
                 SearchTask()
-                print("Job done.")
                 break
 
         else:
