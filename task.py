@@ -107,13 +107,64 @@ class SearchTask(Task):
                     print('Updating row, please wait', row['ID'])
                     row['Task Date'], row['Task Title'], row['Time Spent'], row[
                         'Task Notes'] = task_date, task_title, task_time_spent, task_notes
-                row = {'ID': row['ID'], 'Task Date': row['Task Date'], 'Task Title': row['Task Title'],
+                    row = {'ID': row['ID'], 'Task Date': row['Task Date'], 'Task Title': row['Task Title'],
                        'Time Spent': row['Time Spent'], 'Task Notes': row['Task Notes']}
                 writer.writerow(row)
 
         shutil.move(tempfile.name, self.filename)
         print("Your record was successfuly saved.")
         SearchTask()
+
+    def delete_record(self, id):
+
+        """
+        # has an issue stacking frames if you type different key multiple times
+        # 5x times press x - 5x will replace the file
+        question = input("You are about to delete a record, are you sure? ")
+        if question == "n":
+            SearchTask()
+        elif question == "y":
+            pass
+        else:
+            print("Your input is invalid, please choose from the following again.")
+            self.delete_record(id)
+        """
+
+        tempfile = NamedTemporaryFile(mode='w', delete=False)
+
+        fields = ['ID', 'Task Date', 'Task Title', 'Time Spent', 'Task Notes']
+
+        with open(self.filename, 'r') as csvfile, tempfile:
+            reader = csv.DictReader(csvfile, fieldnames=fields)
+            writer = csv.DictWriter(tempfile, fieldnames=fields)
+            for row in reader:
+                if row['ID'] != str(id):
+                    print('updating row', row['ID'])
+                    row = {'ID': row['ID'], 'Task Date': row['Task Date'], 'Task Title': row['Task Title'],
+                           'Time Spent': row['Time Spent'], 'Task Notes': row['Task Notes']}
+                    writer.writerow(row)
+
+        shutil.move(tempfile.name, self.filename)
+
+    def crud(self, action, record_id, step, data_dict):
+        if action == "n" and step < len(data_dict):
+            self.clear_screen()
+            return True
+        if action == "n" and step >= len(data_dict):
+            self.clear_screen()
+            SearchTask()
+        elif action == "r":
+            self.clear_screen()
+            SearchTask()
+        elif action == "e":
+            self.clear_screen()
+            self.edit_record(record_id)
+        elif action == "d":
+            self.clear_screen()
+            self.delete_record(record_id)
+        else:
+            message = "Your selection was invalid please try again: "
+            self.show_results(data_dict, message)
 
     def show_results(self, data_dict, message):
         self.clear_screen()
@@ -132,24 +183,16 @@ class SearchTask(Task):
             step += 1
             if step == len(data_dict):
                 action = input("Delete, Edit, Return to the Menu ")
+                if self.crud(action, record_id, step, data_dict):
+                    continue
+                else:
+                    break
             else:
                 action = input("Next, Delete, Edit, Return to the Menu ")
-
-            if action == "n" and step < len(data_dict):
-                self.clear_screen()
-                continue
-            if action == "n" and step >= len(data_dict):
-                self.clear_screen()
-                SearchTask()
-            elif action == "r":
-                self.clear_screen()
-                SearchTask()
-            elif action == "e":
-                self.clear_screen()
-                self.edit_record(record_id)
-            else:
-                message = "Your selection was invalid please try again: "
-                self.show_results(data_dict, message)
+                if self.crud(action, record_id, step, data_dict):
+                    continue
+                else:
+                    break
 
     def search_by_date(self):
         print("date")
