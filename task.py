@@ -183,12 +183,14 @@ class SearchTask(Task):
             step += 1
             if step == len(data_dict):
                 action = input("Delete, Edit, Return to the Menu ")
+                action = action.lower()
                 if self.crud(action, record_id, step, data_dict):
                     continue
                 else:
                     break
             else:
                 action = input("Next, Delete, Edit, Return to the Menu ")
+                action = action.lower()
                 if self.crud(action, record_id, step, data_dict):
                     continue
                 else:
