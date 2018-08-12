@@ -168,7 +168,7 @@ class SearchTask(Task):
                 for row in task_reader:
                     for key, value in row.items():
                         if key == "Time Spent":
-                            found = re.search(search_time, row[key])
+                            found = re.match(r'\b{0}\b'.format(search_time), row[key])
                             if found:
                                 data_dict[row['ID']] = row
             message = ""

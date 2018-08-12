@@ -1,12 +1,12 @@
 ID,Task Date,Task Title,Time Spent,Task Notes
-1,11,Rocket,12,Spacex
+1,11,Rocket,999,Spacex
 2,12,Rocket2,15,Spacex4
-3,23,Rocket2,18,Spacex8
-4,45,Rocket2,15,Spacex10
+3,23,Rocket2,765,Spacex8
+4,45,Rocket2,765,Spacex10
 5,18.4,Radek,27,Zeus and Sky
-6,50,Rocket,18,Spacex9
+6,1,1,1,1
 7,101,Rocket2,15,Spacex13
-8,102,Rocket2,14,Spacex15
-9,103,Rocket2,15,Spacex17
+8,102,Rocket2,2,Spacex15
+9,103,Rocket2,2,Spacex17
 10,564,Rocket2,18,Spacex21
 11,34,Hello,12,SpaceX on the Mars
