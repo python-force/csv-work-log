@@ -1,6 +1,8 @@
-import csv
-import re
 import os
+import re
+import csv
+import shutil
+from tempfile import NamedTemporaryFile
 
 class Task:
     filename = "work-log.csv"
@@ -86,16 +88,46 @@ class SearchTask(Task):
         else:
             os.system('clear')
 
+    def edit_record(self, id):
+
+        task_date = input("Enter a date: ")
+        task_title = input("Enter a title: ")
+        task_time_spent = input("Enter time spent: ")
+        task_notes = input("Enter a notes: ")
+
+        tempfile = NamedTemporaryFile(mode='w', delete=False)
+
+        fields = ['ID', 'Task Date', 'Task Title', 'Time Spent', 'Task Notes']
+
+        with open(self.filename, 'r') as file, tempfile:
+            reader = csv.DictReader(file, fieldnames=fields)
+            writer = csv.DictWriter(tempfile, fieldnames=fields)
+            for row in reader:
+                if row['ID'] == str(id):
+                    print('Updating row, please wait', row['ID'])
+                    row['Task Date'], row['Task Title'], row['Time Spent'], row[
+                        'Task Notes'] = task_date, task_title, task_time_spent, task_notes
+                row = {'ID': row['ID'], 'Task Date': row['Task Date'], 'Task Title': row['Task Title'],
+                       'Time Spent': row['Time Spent'], 'Task Notes': row['Task Notes']}
+                writer.writerow(row)
+
+        shutil.move(tempfile.name, self.filename)
+        print("Your record was successfuly saved.")
+        SearchTask()
+
     def show_results(self, data_dict, message):
         self.clear_screen()
         self.message = message
         step = 0
+        record_id = 0
         if message != "":
             print("Your selection was invalid please try again. ")
         for index, record in data_dict.items():
             for task_header, data in record.items():
                 if task_header != "ID":
                     print(task_header + ": " + data)
+                else:
+                    record_id = int(data)
             print("Results " + str(step+1) + " of " + str(len(data_dict)))
             step += 1
             if step == len(data_dict):
@@ -112,6 +144,9 @@ class SearchTask(Task):
             elif action == "r":
                 self.clear_screen()
                 SearchTask()
+            elif action == "e":
+                self.clear_screen()
+                self.edit_record(record_id)
             else:
                 message = "Your selection was invalid please try again: "
                 self.show_results(data_dict, message)
