@@ -26,32 +26,43 @@ class AddTask(Task):
     def add_new_entry(self):
 
         task_date = input("Enter a date: ")
-        task_title = input("Enter a title: ")
-        task_time_spent = input("Enter time spent: ")
-        task_notes = input("Enter a notes: ")
-
-
-        with open('work-log.csv', 'a') as csvfile:
-            field_names = ['ID', 'Task Date', 'Task Title', 'Time Spent', 'Task Notes']
-            task_writer = csv.DictWriter(csvfile, fieldnames=field_names)
-
-            if self.check_file_is_empty(self.filename):
-                task_writer.writeheader()
-                task_writer.writerow({
-                    'ID': self.id,
-                    'Task Date': task_date,
-                    'Task Title': task_title,
-                    'Time Spent': task_time_spent,
-                    'Task Notes': task_notes
-                })
+        try:
+            datetime.datetime.strptime(task_date, '%Y/%m/%d')
+        except:
+            print("Date you specified is not valid, please try again.")
+            self.add_new_entry()
+        else:
+            task_title = input("Enter a title: ")
+            task_time_spent = input("Enter time spent: ")
+            try:
+                int(task_time_spent)
+            except:
+                print("Your selection is not a number, please try again: ")
+                self.add_new_entry()
             else:
-                task_writer.writerow({
-                    'ID': self.id + 1,
-                    'Task Date': task_date,
-                    'Task Title': task_title,
-                    'Time Spent': task_time_spent,
-                    'Task Notes': task_notes
-                })
+                task_notes = input("Enter a notes: ")
+
+                with open('work-log.csv', 'a') as csvfile:
+                    field_names = ['ID', 'Task Date', 'Task Title', 'Time Spent', 'Task Notes']
+                    task_writer = csv.DictWriter(csvfile, fieldnames=field_names)
+
+                    if self.check_file_is_empty(self.filename):
+                        task_writer.writeheader()
+                        task_writer.writerow({
+                            'ID': self.id,
+                            'Task Date': task_date,
+                            'Task Title': task_title,
+                            'Time Spent': task_time_spent,
+                            'Task Notes': task_notes
+                        })
+                    else:
+                        task_writer.writerow({
+                            'ID': self.id + 1,
+                            'Task Date': task_date,
+                            'Task Title': task_title,
+                            'Time Spent': task_time_spent,
+                            'Task Notes': task_notes
+                        })
 
 
 
@@ -119,6 +130,7 @@ class SearchTask(Task):
     def delete_record(self, id):
 
         """
+        # TO DO: Upgrade it to version that have validation questions
         # has an issue stacking frames if you type different key multiple times
         # 5x times press x - 5x will replace the file
         question = input("You are about to delete a record, are you sure? ")

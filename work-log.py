@@ -20,6 +20,7 @@ def job_selected():
     Job method selection
     :return:
     """
+    main_menu()
     selection = input("Hello Commander, what we doing today? "
                 "Please choose a number: ")
     if check_selection(selection):
@@ -37,6 +38,11 @@ def check_selection(selection):
         return True
     except:
         pass
+
+def main_menu():
+    print("Welcome to Work Log.")
+    for key, value in CHOICES.items():
+        print(str(key) + ". " + value)
 
 # Script doesn't execute when imported
 if __name__ == '__main__':
