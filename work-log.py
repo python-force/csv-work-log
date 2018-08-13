@@ -24,7 +24,6 @@ def job_selected():
     selection = input("Hello Commander, what we doing today? "
                 "Please choose a number: ")
     if check_selection(selection):
-        print("Great choice, " + str(selection) + " it is then.")
         return int(selection)
 
 def check_selection(selection):
@@ -61,7 +60,12 @@ if __name__ == '__main__':
                 print("Record successfully added.")
                 break
             elif i == 2:
+                clear_screen()
                 SearchTask()
+                break
+            elif i == 3:
+                clear_screen()
+                print("Thank you for using our Mars Data Log.")
                 break
 
         else:
@@ -70,4 +74,4 @@ if __name__ == '__main__':
             print("That choice is not in the binder, please try again. Loading menu...")
             time.sleep(3)
 
-    print("Done Coding - No more messages to send")
+    print("Thank you and have a very safe and productive day. Work Safe. Work Smart.")

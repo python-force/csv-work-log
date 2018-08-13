@@ -2,6 +2,7 @@ import os
 import datetime
 import re
 import csv
+from collections import OrderedDict
 import shutil
 from tempfile import NamedTemporaryFile
 
@@ -46,31 +47,28 @@ class AddTask(Task):
                     field_names = ['ID', 'Task Date', 'Task Title', 'Time Spent', 'Task Notes']
                     task_writer = csv.DictWriter(csvfile, fieldnames=field_names)
 
+                    data = OrderedDict([
+                        ('ID', self.id),
+                        ('Task Date', task_date),
+                        ('Task Title', task_title),
+                        ('Time Spent', task_time_spent),
+                        ('Task Notes', task_notes)
+                    ])
+
                     if self.check_file_is_empty(self.filename):
                         task_writer.writeheader()
-                        task_writer.writerow({
-                            'ID': self.id,
-                            'Task Date': task_date,
-                            'Task Title': task_title,
-                            'Time Spent': task_time_spent,
-                            'Task Notes': task_notes
-                        })
+                        task_writer.writerow(data)
                     else:
-                        task_writer.writerow({
-                            'ID': self.id + 1,
-                            'Task Date': task_date,
-                            'Task Title': task_title,
-                            'Time Spent': task_time_spent,
-                            'Task Notes': task_notes
-                        })
-
+                        data['ID'] += 1  # increment the ID
+                        task_writer.writerow(data)
 
 
 class SearchTask(Task):
 
-    SEARCH_CHOICES = {1: "Date", 2: "Time Spent", 3: "Exact Match", 4: "Pattern"}
+    SEARCH_CHOICES = {1: "Date", 2: "Time Spent", 3: "Exact Match", 4: "Pattern", 5: "Exit"}
 
     def __init__(self, selection = 0):
+        self.main_menu()
         self.selection = input("Which search you would like to perform?: ")
         try:
             search_selection = int(self.selection)
@@ -86,6 +84,8 @@ class SearchTask(Task):
                 self.search_by_exact_match()
             elif search_selection == 4:
                  self.search_by_pattern()
+            elif search_selection == 5:
+                 AddTask
             else:
                 print("Your selection is invalid, please try again")
                 SearchTask()
@@ -100,32 +100,50 @@ class SearchTask(Task):
         else:
             os.system('clear')
 
+    def main_menu(self):
+        print("Welcome to Search.")
+        for key, value in self.SEARCH_CHOICES.items():
+            print(str(key) + ". " + value)
+
     def edit_record(self, id):
 
         task_date = input("Enter a date: ")
-        task_title = input("Enter a title: ")
-        task_time_spent = input("Enter time spent: ")
-        task_notes = input("Enter a notes: ")
+        try:
+            datetime.datetime.strptime(task_date, '%Y/%m/%d')
+        except:
+            print("Date you specified is not valid, please try again.")
+            self.edit_record(id)
+        else:
+            task_title = input("Enter a title: ")
+            task_time_spent = input("Enter time spent: ")
+            try:
+                int(task_time_spent)
+            except:
+                print("Your selection is not a number, please try again: ")
+                self.edit_record(id)
+            else:
+                task_notes = input("Enter a notes: ")
 
-        tempfile = NamedTemporaryFile(mode='w', delete=False)
+                tempfile = NamedTemporaryFile(mode='w', delete=False)
 
-        fields = ['ID', 'Task Date', 'Task Title', 'Time Spent', 'Task Notes']
+                fields = ['ID', 'Task Date', 'Task Title', 'Time Spent', 'Task Notes']
 
-        with open(self.filename, 'r') as file, tempfile:
-            reader = csv.DictReader(file, fieldnames=fields)
-            writer = csv.DictWriter(tempfile, fieldnames=fields)
-            for row in reader:
-                if row['ID'] == str(id):
-                    print('Updating row with ID ' + row['ID'] + ' , please wait')
-                    row['Task Date'], row['Task Title'], row['Time Spent'], row[
-                        'Task Notes'] = task_date, task_title, task_time_spent, task_notes
-                    row = {'ID': row['ID'], 'Task Date': row['Task Date'], 'Task Title': row['Task Title'],
-                       'Time Spent': row['Time Spent'], 'Task Notes': row['Task Notes']}
-                writer.writerow(row)
+                with open(self.filename, 'r') as file, tempfile:
+                    reader = csv.DictReader(file, fieldnames=fields)
+                    writer = csv.DictWriter(tempfile, fieldnames=fields)
+                    for row in reader:
+                        if row['ID'] == str(id):
+                            print('Updating row with ID ' + row['ID'] + ' , please wait')
+                            row['Task Date'], row['Task Title'], row['Time Spent'], row[
+                                'Task Notes'] = task_date, task_title, task_time_spent, task_notes
+                            row = {'ID': row['ID'], 'Task Date': row['Task Date'], 'Task Title': row['Task Title'],
+                               'Time Spent': row['Time Spent'], 'Task Notes': row['Task Notes']}
+                        writer.writerow(row)
 
-        shutil.move(tempfile.name, self.filename)
-        print("Your record was successfuly saved.")
-        SearchTask()
+                shutil.move(tempfile.name, self.filename)
+                self.clear_screen()
+                print("Your record was successfuly saved.")
+                SearchTask()
 
     def delete_record(self, id):
 
@@ -152,12 +170,18 @@ class SearchTask(Task):
             writer = csv.DictWriter(tempfile, fieldnames=fields)
             for row in reader:
                 if row['ID'] != str(id):
-                    print('updating row', row['ID'])
+                    # print('updating row', row['ID'])
                     row = {'ID': row['ID'], 'Task Date': row['Task Date'], 'Task Title': row['Task Title'],
                            'Time Spent': row['Time Spent'], 'Task Notes': row['Task Notes']}
                     writer.writerow(row)
+                else:
+                    deleted_one = {'ID': row['ID'], 'Task Date': row['Task Date'], 'Task Title': row['Task Title'],
+                           'Time Spent': row['Time Spent'], 'Task Notes': row['Task Notes']}
 
         shutil.move(tempfile.name, self.filename)
+        self.clear_screen()
+        print("Record ID " + deleted_one['ID'] + " called [" + deleted_one['Task Title'] + "], was successfully deleted.")
+        SearchTask()
 
     def crud(self, action, record_id, step, data_dict):
         if action == "n" and step < len(data_dict):
@@ -186,28 +210,33 @@ class SearchTask(Task):
         record_id = 0
         if message != "":
             print("Your selection was invalid please try again. ")
-        for index, record in data_dict.items():
-            for task_header, data in record.items():
-                if task_header != "ID":
-                    print(task_header + ": " + data)
+        if data_dict != None:
+            for index, record in data_dict.items():
+                for task_header, data in record.items():
+                    if task_header != "ID":
+                        print(task_header + ": " + data)
+                    else:
+                        record_id = int(data)
+                print("Results " + str(step+1) + " of " + str(len(data_dict)))
+                step += 1
+                if step == len(data_dict):
+                    action = input("Delete, Edit, Return to the Menu ")
+                    action = action.lower()
+                    if self.crud(action, record_id, step, data_dict):
+                        continue
+                    else:
+                        break
                 else:
-                    record_id = int(data)
-            print("Results " + str(step+1) + " of " + str(len(data_dict)))
-            step += 1
-            if step == len(data_dict):
-                action = input("Delete, Edit, Return to the Menu ")
-                action = action.lower()
-                if self.crud(action, record_id, step, data_dict):
-                    continue
-                else:
-                    break
+                    action = input("Next, Delete, Edit, Return to the Menu ")
+                    action = action.lower()
+                    if self.crud(action, record_id, step, data_dict):
+                        continue
+                    else:
+                        break
             else:
-                action = input("Next, Delete, Edit, Return to the Menu ")
-                action = action.lower()
-                if self.crud(action, record_id, step, data_dict):
-                    continue
-                else:
-                    break
+                self.clear_screen()
+                print("No records found.")
+                SearchTask()
 
     def perform_csv_search(self, header, search_data):
         data_dict = {}
