@@ -1,4 +1,5 @@
 import os
+import datetime
 import re
 import csv
 import shutil
@@ -104,7 +105,7 @@ class SearchTask(Task):
             writer = csv.DictWriter(tempfile, fieldnames=fields)
             for row in reader:
                 if row['ID'] == str(id):
-                    print('Updating row, please wait', row['ID'])
+                    print('Updating row with ID ' + row['ID'] + ' , please wait')
                     row['Task Date'], row['Task Title'], row['Time Spent'], row[
                         'Task Notes'] = task_date, task_title, task_time_spent, task_notes
                     row = {'ID': row['ID'], 'Task Date': row['Task Date'], 'Task Title': row['Task Title'],
@@ -197,7 +198,24 @@ class SearchTask(Task):
                     break
 
     def search_by_date(self):
-        print("date")
+        search_date = input("What date you looking for?: ")
+        try:
+            datetime.datetime.strptime(search_date, '%Y/%m/%d')
+        except:
+            print("Date you specified is not valid, please try again.")
+            self.search_by_date()
+        else:
+            data_dict = {}
+            with open(self.filename, newline='') as csvfile:
+                task_reader = csv.DictReader(csvfile, delimiter=',')
+                for row in task_reader:
+                    for key, value in row.items():
+                        if key == "Task Date":
+                            found = re.match(r'\b{0}\b'.format(search_date), row[key])
+                            if found:
+                                data_dict[row['ID']] = row
+            message = ""
+            self.show_results(data_dict, message)
 
     def search_by_time_spent(self):
         search_time = input("What time you looking for?: ")
