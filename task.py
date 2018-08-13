@@ -241,4 +241,21 @@ class SearchTask(Task):
         print("match")
 
     def search_by_pattern(self):
-        print("pattern")
+        search_pattern = input("Enter pattern: ")
+        try:
+            re.compile('\b12\b')
+            is_valid = True
+        except re.error:
+            is_valid = False
+        else:
+            data_dict = {}
+            with open(self.filename, newline='') as csvfile:
+                task_reader = csv.DictReader(csvfile, delimiter=',')
+                for row in task_reader:
+                    for key, value in row.items():
+                        if key == "Task Notes" or key == "Task Title":
+                            found = re.match(r'\b12\b', row[key])
+                            if found:
+                                data_dict[row['ID']] = row
+            message = ""
+            self.show_results(data_dict, message)
