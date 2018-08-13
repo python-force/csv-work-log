@@ -9,6 +9,45 @@ from tempfile import NamedTemporaryFile
 class Task:
     filename = "work-log.csv"
 
+    CHOICES = {1: "AddTask", 2: "SearchTask", 3: "Quit"}
+
+    def clear_screen(self):
+        """
+        Clear screen
+        :return:
+        """
+        if os.system == "nt":
+            os.system('cls')
+        else:
+            os.system('clear')
+
+    def menu(self):
+        print("Welcome to Work Log.")
+        for key, value in self.CHOICES.items():
+            print(str(key) + ". " + value)
+
+    def job_selected(self):
+        """
+        Job method selection
+        :return:
+        """
+        self.menu()
+        selection = input("Hello Commander, what we doing today? "
+                          "Please choose a number: ")
+        if self.check_selection(selection):
+            return int(selection)
+
+    def check_selection(self, selection):
+        """
+        Validation of the user's choice of the job
+        :param selection:
+        :return:
+        """
+        try:
+            int(selection)
+            return True
+        except:
+            pass
 
 class AddTask(Task):
 
@@ -65,7 +104,7 @@ class AddTask(Task):
 
 class SearchTask(Task):
 
-    SEARCH_CHOICES = {1: "Date", 2: "Time Spent", 3: "Exact Match", 4: "Pattern", 5: "Exit"}
+    SEARCH_CHOICES = {1: "Date", 2: "Time Spent", 3: "Exact Match", 4: "Pattern", 5: "Main Menu", 6: "Exit"}
 
     def __init__(self, selection = 0):
         self.main_menu()
@@ -85,20 +124,13 @@ class SearchTask(Task):
             elif search_selection == 4:
                  self.search_by_pattern()
             elif search_selection == 5:
-                 AddTask
+                self.clear_screen()
+                Task().job_selected()
+            elif search_selection == 6:
+                self.job_selected()
             else:
                 print("Your selection is invalid, please try again")
                 SearchTask()
-
-    def clear_screen(self):
-        """
-        Clear screen
-        :return:
-        """
-        if os.system == "nt":
-            os.system('cls')
-        else:
-            os.system('clear')
 
     def main_menu(self):
         print("Welcome to Search.")
