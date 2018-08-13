@@ -197,65 +197,60 @@ class SearchTask(Task):
                 else:
                     break
 
+    def perform_csv_search(self, header, search_data):
+        data_dict = {}
+        with open(self.filename, newline='') as csvfile:
+            task_reader = csv.DictReader(csvfile, delimiter=',')
+            for row in task_reader:
+                for key, value in row.items():
+                    if len(header) > 1:
+                        if key == header[0] or key == header[1]:
+                            found = re.search(search_data, row[key], re.I)
+                            if found:
+                                data_dict[row['ID']] = row
+                    else:
+                        if key == header[0]:
+                            found = re.match(r'\b{0}\b'.format(search_data), row[key])
+                            if found:
+                                data_dict[row['ID']] = row
+        message = ""
+        self.show_results(data_dict, message)
+
     def search_by_date(self):
-        search_date = input("What date you looking for?: ")
+        search_data = input("What date you looking for?: ")
         try:
-            datetime.datetime.strptime(search_date, '%Y/%m/%d')
+            datetime.datetime.strptime(search_data, '%Y/%m/%d')
         except:
             print("Date you specified is not valid, please try again.")
             self.search_by_date()
         else:
-            data_dict = {}
-            with open(self.filename, newline='') as csvfile:
-                task_reader = csv.DictReader(csvfile, delimiter=',')
-                for row in task_reader:
-                    for key, value in row.items():
-                        if key == "Task Date":
-                            found = re.match(r'\b{0}\b'.format(search_date), row[key])
-                            if found:
-                                data_dict[row['ID']] = row
-            message = ""
-            self.show_results(data_dict, message)
+            header = ["Task Date"]
+            self.perform_csv_search(header, search_data)
 
     def search_by_time_spent(self):
-        search_time = input("What time you looking for?: ")
+        search_data = input("What time you looking for?: ")
         try:
-            int(search_time)
+            int(search_data)
         except:
             print("Your selection is not a number, please try again: ")
             self.search_by_time_spent()
         else:
-            data_dict = {}
-            with open(self.filename, newline='') as csvfile:
-                task_reader = csv.DictReader(csvfile, delimiter=',')
-                for row in task_reader:
-                    for key, value in row.items():
-                        if key == "Time Spent":
-                            found = re.match(r'\b{0}\b'.format(search_time), row[key])
-                            if found:
-                                data_dict[row['ID']] = row
-            message = ""
-            self.show_results(data_dict, message)
+            header = ["Time Spent"]
+            self.perform_csv_search(header, search_data)
 
     def search_by_exact_match(self):
-        print("match")
+        search_data = input("Enter a string you looking for: ")
+        search_data = r'\b{0}\b'.format(search_data)
+        header = ["Task Notes", "Task Title"]
+        self.perform_csv_search(header, search_data)
 
     def search_by_pattern(self):
-        search_pattern = input("Enter pattern: ")
+        search_data = input("Enter pattern: ")
         try:
-            re.compile('\b12\b')
-            is_valid = True
-        except re.error:
-            is_valid = False
+            re.compile(search_data)
+        except:
+            print("Your pattern is not valid, please try again.")
+            self.search_by_pattern()
         else:
-            data_dict = {}
-            with open(self.filename, newline='') as csvfile:
-                task_reader = csv.DictReader(csvfile, delimiter=',')
-                for row in task_reader:
-                    for key, value in row.items():
-                        if key == "Task Notes" or key == "Task Title":
-                            found = re.match(r'\b12\b', row[key])
-                            if found:
-                                data_dict[row['ID']] = row
-            message = ""
-            self.show_results(data_dict, message)
+            header = ["Task Notes", "Task Title"]
+            self.perform_csv_search(header, search_data)
