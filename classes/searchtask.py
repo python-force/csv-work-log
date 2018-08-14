@@ -9,7 +9,7 @@ from classes.task import Task
 
 class SearchTask(Task):
 
-    SEARCH_CHOICES = {1: "Date", 2: "Time Spent", 3: "Exact Match", 4: "Pattern", 5: "Main Menu"}
+    SEARCH_CHOICES = {1: "Date", 2: "Date Range", 3: "Time Spent", 4: "Exact Match", 5: "Pattern", 6: "Main Menu"}
 
     def __init__(self, selection=0):
         """
@@ -27,13 +27,15 @@ class SearchTask(Task):
         else:
             if search_selection == 1:
                 self.search_by_date()
-            elif search_selection == 2:
-                self.search_by_time_spent()
+            if search_selection == 2:
+                self.search_by_date_range()
             elif search_selection == 3:
-                self.search_by_exact_match()
+                self.search_by_time_spent()
             elif search_selection == 4:
-                self.search_by_pattern()
+                self.search_by_exact_match()
             elif search_selection == 5:
+                self.search_by_pattern()
+            elif search_selection == 6:
                 self.clear_screen()
             else:
                 print("Your selection is invalid, please try again")
@@ -59,43 +61,47 @@ class SearchTask(Task):
         :param id: ID of the record being edited
         :return: Updated CSV file
         """
-        task_date = input("Enter a date, Format YYYY-MM-DD: ")
-        try:
-            datetime.datetime.strptime(task_date, '%Y/%m/%d')
-        except:
-            print("Date you specified is not valid, please try again.")
-            self.edit_record(id)
-        else:
-            task_title = input("Enter a title: ")
-            task_time_spent = input("Enter time spent: ")
+        while True:
             try:
-                int(task_time_spent)
+                task_date = input("Enter a date, Format YYYY/MM/DD: ")
+                datetime.datetime.strptime(task_date, '%Y/%m/%d')
+                task_title = input("Enter a title: ")
+                while True:
+                    try:
+                        task_time_spent = input("Enter time spent: ")
+                        int(task_time_spent)
+                        task_notes = input("Enter a notes: ")
+                    except:
+                        print("Date you specified is not valid, please try again.")
+                        continue
+                    else:
+                        break
             except:
-                print("Your selection is not a number, please try again: ")
-                self.edit_record(id)
+                print("Date you specified is not valid, please try again.")
+                continue
             else:
-                task_notes = input("Enter a notes: ")
+                break
 
-                tempfile = NamedTemporaryFile(mode='w', delete=False)
+        tempfile = NamedTemporaryFile(mode='w', delete=False)
 
-                fields = ['ID', 'Task Date', 'Task Title', 'Time Spent', 'Task Notes']
+        fields = ['ID', 'Task Date', 'Task Title', 'Time Spent', 'Task Notes']
 
-                with open(self.filename, 'r') as file, tempfile:
-                    reader = csv.DictReader(file, fieldnames=fields)
-                    writer = csv.DictWriter(tempfile, fieldnames=fields)
-                    for row in reader:
-                        if row['ID'] == str(id):
-                            # print('Updating row with ID ' + row['ID'] + ' , please wait')
-                            row['Task Date'], row['Task Title'], row['Time Spent'], row[
-                                'Task Notes'] = task_date, task_title, task_time_spent, task_notes
-                            row = {'ID': row['ID'], 'Task Date': row['Task Date'], 'Task Title': row['Task Title'],
-                                'Time Spent': row['Time Spent'], 'Task Notes': row['Task Notes']}
-                        writer.writerow(row)
+        with open(self.filename, 'r') as file, tempfile:
+            reader = csv.DictReader(file, fieldnames=fields)
+            writer = csv.DictWriter(tempfile, fieldnames=fields)
+            for row in reader:
+                if row['ID'] == str(id):
+                    # print('Updating row with ID ' + row['ID'] + ' , please wait')
+                    row['Task Date'], row['Task Title'], row['Time Spent'], row[
+                        'Task Notes'] = task_date, task_title, task_time_spent, task_notes
+                    row = {'ID': row['ID'], 'Task Date': row['Task Date'], 'Task Title': row['Task Title'],
+                           'Time Spent': row['Time Spent'], 'Task Notes': row['Task Notes']}
+                writer.writerow(row)
 
-                shutil.move(tempfile.name, self.filename)
-                self.clear_screen()
-                print("Your record was successfuly saved.")
-                SearchTask()
+        shutil.move(tempfile.name, self.filename)
+        self.clear_screen()
+        print("Your record was successfuly saved.")
+        SearchTask()
 
     def delete_record(self, id):
         """
@@ -212,7 +218,7 @@ class SearchTask(Task):
                 print("No records found.")
                 SearchTask()
 
-    def perform_csv_search(self, header, search_data):
+    def perform_csv_search(self, header, search_data, start_date, end_date):
         """
         Search for all methods being used to perform search based on input
         :param header: Header of the CSV file being edited
@@ -224,7 +230,13 @@ class SearchTask(Task):
             task_reader = csv.DictReader(csvfile, delimiter=',')
             for row in task_reader:
                 for key, value in row.items():
-                    if len(header) > 1:
+                    if start_date != None and end_date != None and search_data == "":
+                        if key == header[0]:
+                            value = datetime.datetime.strptime(value, '%Y/%m/%d')
+                            found = start_date <= value <= end_date
+                            if found:
+                                data_dict[row['ID']] = row
+                    elif len(header) > 1:
                         if key == header[0] or key == header[1]:
                             found = re.search(search_data, row[key], re.I)
                             if found:
@@ -234,6 +246,7 @@ class SearchTask(Task):
                             found = re.match(r'\b{0}\b'.format(search_data), row[key])
                             if found:
                                 data_dict[row['ID']] = row
+
         message = ""
         self.show_results(data_dict, message)
 
@@ -242,30 +255,61 @@ class SearchTask(Task):
         Searching by valid date
         :return: Route method to show results
         """
-        search_data = input("What date you looking for? Format YYYY-MM-DD: ")
-        try:
-            datetime.datetime.strptime(search_data, '%Y/%m/%d')
-        except:
-            print("Date you specified is not valid, please try again.")
-            self.search_by_date()
-        else:
-            header = ["Task Date"]
-            self.perform_csv_search(header, search_data)
+        while True:
+            try:
+                search_data = input("What date you looking for? Format YYYY/MM/DD: ")
+                datetime.datetime.strptime(search_data, '%Y/%m/%d')
+            except:
+                print("Date you specified is not valid, please try again.")
+                continue
+            else:
+                break
+
+        header = ["Task Date"]
+        start_date = ""
+        end_date = ""
+        self.perform_csv_search(header, search_data, start_date, end_date)
+
+    def search_by_date_range(self):
+        """
+        Searching by date range
+        :return: Route method to show results
+        """
+        while True:
+            try:
+                start_date = input("What is your starting date? Format YYYY/MM/DD: ")
+                start_date = datetime.datetime.strptime(start_date, '%Y/%m/%d')
+                end_date = input("What is your ending date? Format YYYY/MM/DD: ")
+                end_date = datetime.datetime.strptime(end_date, '%Y/%m/%d')
+            except:
+                print("Date you specified is not valid, please try again.")
+                continue
+            else:
+                break
+
+        header = ["Task Date"]
+        search_data = ""
+        self.perform_csv_search(header, search_data, start_date, end_date)
+
 
     def search_by_time_spent(self):
         """
         Searching by valid time spent
         :return: Route method to show results
         """
-        search_data = input("What time you looking for?: ")
-        try:
-            int(search_data)
-        except:
-            print("Your selection is not a number, please try again: ")
-            self.search_by_time_spent()
-        else:
-            header = ["Time Spent"]
-            self.perform_csv_search(header, search_data)
+        while True:
+            try:
+                search_data = int(input("What time you looking for?: "))
+            except:
+                print("Your selection is not a number, please try again: ")
+                continue
+            else:
+                break
+
+        header = ["Time Spent"]
+        start_date = ""
+        end_date = ""
+        self.perform_csv_search(header, search_data, start_date, end_date)
 
     def search_by_exact_match(self):
         """
@@ -275,19 +319,26 @@ class SearchTask(Task):
         search_data = input("Enter a string you looking for: ")
         search_data = r'\b{0}\b'.format(search_data)
         header = ["Task Notes", "Task Title"]
-        self.perform_csv_search(header, search_data)
+        start_date = ""
+        end_date = ""
+        self.perform_csv_search(header, search_data, start_date, end_date)
 
     def search_by_pattern(self):
         """
         Searching by regex valid pattern
         :return: Route method to show results
         """
-        search_data = input("Enter pattern: ")
-        try:
-            re.compile(search_data)
-        except:
-            print("Your pattern is not valid, please try again.")
-            self.search_by_pattern()
-        else:
-            header = ["Task Notes", "Task Title"]
-            self.perform_csv_search(header, search_data)
+        while True:
+            try:
+                search_data = input("Enter pattern: ")
+                re.compile(search_data)
+            except:
+                print("Your pattern is not valid, please try again.")
+                continue
+            else:
+                break
+
+        header = ["Task Notes", "Task Title"]
+        start_date = ""
+        end_date = ""
+        self.perform_csv_search(header, search_data, start_date, end_date)
