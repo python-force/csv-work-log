@@ -1,7 +1,8 @@
-import os
 import time
 
-from task import AddTask, SearchTask, Task
+from classes.task import Task
+from classes.addtask import AddTask
+from classes.searchtask import SearchTask
 
 # Script doesn't execute when imported
 if __name__ == '__main__':

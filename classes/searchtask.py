@@ -1,131 +1,14 @@
-import os
 import datetime
 import re
 import csv
-from collections import OrderedDict
 import shutil
 from tempfile import NamedTemporaryFile
 
-class Task:
-    filename = "work-log.csv"
-
-    CHOICES = {1: "AddTask", 2: "SearchTask", 3: "Quit"}
-
-    def clear_screen(self):
-        """
-        Clear screen
-        :return:
-        """
-        if os.system == "nt":
-            os.system('cls')
-        else:
-            os.system('clear')
-
-    def menu(self):
-        print("Welcome to Work Log.")
-        for key, value in self.CHOICES.items():
-            print(str(key) + ". " + value)
-
-    def job_selected(self):
-        """
-        Job method selection
-        :return:
-        """
-        self.menu()
-        selection = input("Hello Commander, what we doing today? "
-                          "Please choose a number: ")
-        if self.check_selection(selection):
-            return int(selection)
-
-    def check_selection(self, selection):
-        """
-        Validation of the user's choice of the job
-        :param selection:
-        :return:
-        """
-        try:
-            int(selection)
-            return True
-        except:
-            pass
-
-class AddTask(Task):
-
-    id = 0
-
-    def check_file_is_empty(self, filename):
-        with open(filename, newline='') as csvfile:
-            task_reader = csv.reader(csvfile, delimiter=',')
-            rows = list(task_reader)
-            if len(rows) == 1 and rows[0] == []:
-                self.id = 1
-                return True
-            else:
-                self.id = int(rows[-1][0])
-
-    def add_new_entry(self):
-
-        task_date = input("Enter a date: ")
-        try:
-            datetime.datetime.strptime(task_date, '%Y/%m/%d')
-        except:
-            print("Date you specified is not valid, please try again.")
-            self.add_new_entry()
-        else:
-            task_title = input("Enter a title: ")
-            task_time_spent = input("Enter time spent: ")
-            try:
-                int(task_time_spent)
-            except:
-                print("Your selection is not a number, please try again: ")
-                self.add_new_entry()
-            else:
-                task_notes = input("Enter a notes: ")
-
-                with open('work-log.csv', 'a') as csvfile:
-                    field_names = ['ID', 'Task Date', 'Task Title', 'Time Spent', 'Task Notes']
-                    task_writer = csv.DictWriter(csvfile, fieldnames=field_names)
-
-                    if self.check_file_is_empty(self.filename):
-                        task_writer.writeheader()
-                        task_writer.writerow({
-                            'ID': self.id,
-                            'Task Date': task_date,
-                            'Task Title': task_title,
-                            'Time Spent': task_time_spent,
-                            'Task Notes': task_notes
-                        })
-                    else:
-                        task_writer.writerow({
-                            'ID': self.id + 1,
-                            'Task Date': task_date,
-                            'Task Title': task_title,
-                            'Time Spent': task_time_spent,
-                            'Task Notes': task_notes
-                        })
-
-                    """
-                    # TO DO
-                    # Refactor above the script to this
-                    data = OrderedDict([
-                        ('ID', self.id),
-                        ('Task Date', task_date),
-                        ('Task Title', task_title),
-                        ('Time Spent', task_time_spent),
-                        ('Task Notes', task_notes)
-                    ])
-
-                    if self.check_file_is_empty(self.filename):
-                        task_writer.writeheader()
-                        task_writer.writerow(data)
-                    else:
-                        data['ID'] += 1  # increment the ID
-                        task_writer.writerow(data)
-                    """
+from classes.task import Task
 
 class SearchTask(Task):
 
-    SEARCH_CHOICES = {1: "Date", 2: "Time Spent", 3: "Exact Match", 4: "Pattern", 5: "Main Menu", 6: "Exit"}
+    SEARCH_CHOICES = {1: "Date", 2: "Time Spent", 3: "Exact Match", 4: "Pattern", 5: "Main Menu"}
 
     def __init__(self, selection = 0):
         self.main_menu()
@@ -146,8 +29,6 @@ class SearchTask(Task):
                  self.search_by_pattern()
             elif search_selection == 5:
                 self.clear_screen()
-            elif search_selection == 6:
-                self.job_selected()
             else:
                 print("Your selection is invalid, please try again")
                 SearchTask()
@@ -159,7 +40,7 @@ class SearchTask(Task):
 
     def edit_record(self, id):
 
-        task_date = input("Enter a date: ")
+        task_date = input("Enter a date, Format YYYY-MM-DD: ")
         try:
             datetime.datetime.strptime(task_date, '%Y/%m/%d')
         except:
@@ -272,14 +153,14 @@ class SearchTask(Task):
                 print("Results " + str(step+1) + " of " + str(len(data_dict)))
                 step += 1
                 if step == len(data_dict):
-                    action = input("Delete, Edit, Return to the Menu ")
+                    action = input("[D]elete, [E]dit, [R]eturn to the Menu ")
                     action = action.lower()
                     if self.crud(action, record_id, step, data_dict):
                         continue
                     else:
                         break
                 else:
-                    action = input("Next, Delete, Edit, Return to the Menu ")
+                    action = input("[N]ext, [D]elete, [E]dit, [R]eturn to the Menu ")
                     action = action.lower()
                     if self.crud(action, record_id, step, data_dict):
                         continue
@@ -310,7 +191,7 @@ class SearchTask(Task):
         self.show_results(data_dict, message)
 
     def search_by_date(self):
-        search_data = input("What date you looking for?: ")
+        search_data = input("What date you looking for? Format YYYY-MM-DD: ")
         try:
             datetime.datetime.strptime(search_data, '%Y/%m/%d')
         except:
