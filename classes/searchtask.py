@@ -9,7 +9,8 @@ from classes.task import Task
 
 class SearchTask(Task):
 
-    SEARCH_CHOICES = {1: "Date", 2: "Date Range", 3: "Time Spent", 4: "Exact Match", 5: "Pattern", 6: "Main Menu"}
+    SEARCH_CHOICES = {1: "Date", 2: "Date Range", 3: "Time Spent",
+                      4: "Exact Match", 5: "Pattern", 6: "Main Menu"}
 
     def __init__(self, selection=0):
         """
@@ -72,7 +73,8 @@ class SearchTask(Task):
                         int(task_time_spent)
                         task_notes = input("Enter a notes: ")
                     except:
-                        print("Date you specified is not valid, please try again.")
+                        print("Date you specified is not valid, "
+                              "please try again.")
                         continue
                     else:
                         break
@@ -91,11 +93,21 @@ class SearchTask(Task):
             writer = csv.DictWriter(tempfile, fieldnames=fields)
             for row in reader:
                 if row['ID'] == str(id):
-                    # print('Updating row with ID ' + row['ID'] + ' , please wait')
-                    row['Task Date'], row['Task Title'], row['Time Spent'], row[
-                        'Task Notes'] = task_date, task_title, task_time_spent, task_notes
-                    row = {'ID': row['ID'], 'Task Date': row['Task Date'], 'Task Title': row['Task Title'],
-                           'Time Spent': row['Time Spent'], 'Task Notes': row['Task Notes']}
+                    (row['Task Date'],
+                     row['Task Title'],
+                     row['Time Spent'],
+                     row['Task Notes']) = \
+                        task_date, \
+                        task_title, \
+                        task_time_spent, \
+                        task_notes
+
+                    row = {'ID': row['ID'],
+                           'Task Date': row['Task Date'],
+                           'Task Title': row['Task Title'],
+                           'Time Spent': row['Time Spent'],
+                           'Task Notes': row['Task Notes']}
+
                 writer.writerow(row)
 
         shutil.move(tempfile.name, self.filename)
@@ -121,31 +133,24 @@ class SearchTask(Task):
             for row in reader:
                 if row['ID'] != str(id):
                     # print('updating row', row['ID'])
-                    row = {'ID': row['ID'], 'Task Date': row['Task Date'], 'Task Title': row['Task Title'],
-                           'Time Spent': row['Time Spent'], 'Task Notes': row['Task Notes']}
+                    row = {'ID': row['ID'],
+                           'Task Date': row['Task Date'],
+                           'Task Title': row['Task Title'],
+                           'Time Spent': row['Time Spent'],
+                           'Task Notes': row['Task Notes']}
                     writer.writerow(row)
                 else:
-                    deleted_one = {'ID': row['ID'], 'Task Date': row['Task Date'], 'Task Title': row['Task Title'],
-                            'Time Spent': row['Time Spent'], 'Task Notes': row['Task Notes']}
+                    deleted_one = {'ID': row['ID'],
+                                   'Task Date': row['Task Date'],
+                                   'Task Title': row['Task Title'],
+                                   'Time Spent': row['Time Spent'],
+                                   'Task Notes': row['Task Notes']}
 
         shutil.move(tempfile.name, self.filename)
         self.clear_screen()
-        print("Record ID " + deleted_one['ID'] + " called [" + deleted_one['Task Title'] + "], was successfully deleted.")
+        print("Record ID " + deleted_one['ID'] + " called [" +
+              deleted_one['Task Title'] + "], was successfully deleted.")
         SearchTask()
-
-        """
-            # TO DO: Upgrade it to version that have validation questions
-            # has an issue stacking frames if you type different key multiple times
-            # 5x times press x - 5x will replace the file
-            question = input("You are about to delete a record, are you sure? ")
-            if question == "n":
-               SearchTask()
-            elif question == "y":
-               pass
-            else:
-               print("Your input is invalid, please choose from the following again.")
-               self.delete_record(id)
-        """
 
     def crud(self, action, record_id, step, data_dict):
         """
@@ -190,7 +195,7 @@ class SearchTask(Task):
         record_id = 0
         if message != "":
             print("Your selection was invalid please try again. ")
-        if data_dict != None:
+        if data_dict is not None:
             for index, record in data_dict.items():
                 for task_header, data in record.items():
                     if task_header != "ID":
@@ -207,7 +212,10 @@ class SearchTask(Task):
                     else:
                         break
                 else:
-                    action = input("[N]ext, [D]elete, [E]dit, [R]eturn to the Menu ")
+                    action = input("[N]ext, "
+                                   "[D]elete, "
+                                   "[E]dit, "
+                                   "[R]eturn to the Menu ")
                     action = action.lower()
                     if self.crud(action, record_id, step, data_dict):
                         continue
@@ -230,7 +238,9 @@ class SearchTask(Task):
             task_reader = csv.DictReader(csvfile, delimiter=',')
             for row in task_reader:
                 for key, value in row.items():
-                    if start_date != None and end_date != None and search_data == "":
+                    if start_date is not None and \
+                            end_date is not None and \
+                            search_data == "":
                         if key == header[0]:
                             value = datetime.datetime.strptime(value, '%Y/%m/%d')
                             found = start_date <= value <= end_date
@@ -243,7 +253,8 @@ class SearchTask(Task):
                                 data_dict[row['ID']] = row
                     else:
                         if key == header[0]:
-                            found = re.match(r'\b{0}\b'.format(search_data), row[key])
+                            found = re.match(r'\b{0}\b'
+                                             .format(search_data), row[key])
                             if found:
                                 data_dict[row['ID']] = row
 
@@ -257,7 +268,8 @@ class SearchTask(Task):
         """
         while True:
             try:
-                search_data = input("What date you looking for? Format YYYY/MM/DD: ")
+                search_data = input("What date you looking for? "
+                                    "Format YYYY/MM/DD: ")
                 datetime.datetime.strptime(search_data, '%Y/%m/%d')
             except:
                 print("Date you specified is not valid, please try again.")
@@ -277,9 +289,11 @@ class SearchTask(Task):
         """
         while True:
             try:
-                start_date = input("What is your starting date? Format YYYY/MM/DD: ")
+                start_date = input("What is your starting date? "
+                                   "Format YYYY/MM/DD: ")
                 start_date = datetime.datetime.strptime(start_date, '%Y/%m/%d')
-                end_date = input("What is your ending date? Format YYYY/MM/DD: ")
+                end_date = input("What is your ending date? "
+                                 "Format YYYY/MM/DD: ")
                 end_date = datetime.datetime.strptime(end_date, '%Y/%m/%d')
             except:
                 print("Date you specified is not valid, please try again.")
@@ -290,7 +304,6 @@ class SearchTask(Task):
         header = ["Task Date"]
         search_data = ""
         self.perform_csv_search(header, search_data, start_date, end_date)
-
 
     def search_by_time_spent(self):
         """

@@ -48,7 +48,12 @@ class AddTask(Task):
                 task_notes = input("Enter a notes: ")
 
                 with open('work-log.csv', 'a') as csvfile:
-                    field_names = ['ID', 'Task Date', 'Task Title', 'Time Spent', 'Task Notes']
+                    field_names = ['ID',
+                                   'Task Date',
+                                   'Task Title',
+                                   'Time Spent',
+                                   'Task Notes']
+                    
                     task_writer = csv.DictWriter(csvfile, fieldnames=field_names)
 
                     if self.check_file_is_empty(self.filename):

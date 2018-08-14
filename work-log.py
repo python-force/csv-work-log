@@ -30,7 +30,9 @@ if __name__ == '__main__':
         else:
             # The selection is not a number, delay for 3 secs
             # with explanation and ask again
-            print("That choice is not in the binder, please try again. Loading menu...")
+            print("That choice is not in the binder, "
+                  "please try again. Loading menu...")
             time.sleep(3)
 
-    print("Thank you and have a very safe and productive day. Work Safe. Work Smart.")
+    print("Thank you and have a very safe and productive day. "
+          "Work Safe. Work Smart.")
