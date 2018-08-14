@@ -14,6 +14,7 @@ if __name__ == '__main__':
         i = Task().job_selected()
 
         # validation if the input is a number (int)
+        # route user to each Class methods
         if isinstance(i, int):
 
             if i == 1:
@@ -27,7 +28,7 @@ if __name__ == '__main__':
                 break
 
         else:
-            # The selection is not a number, delay for 2 secs
+            # The selection is not a number, delay for 3 secs
             # with explanation and ask again
             print("That choice is not in the binder, please try again. Loading menu...")
             time.sleep(3)

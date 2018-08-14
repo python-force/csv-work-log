@@ -5,6 +5,15 @@ class Task:
 
     CHOICES = {1: "AddTask", 2: "SearchTask", 3: "Quit"}
 
+    def menu(self):
+        """
+        Display menu choices on the screen, defined in CHOICES dicttionary
+        :return:
+        """
+        print("Welcome to Work Log.")
+        for key, value in self.CHOICES.items():
+            print(str(key) + ". " + value)
+
     def clear_screen(self):
         """
         Clear screen
@@ -14,11 +23,6 @@ class Task:
             os.system('cls')
         else:
             os.system('clear')
-
-    def menu(self):
-        print("Welcome to Work Log.")
-        for key, value in self.CHOICES.items():
-            print(str(key) + ". " + value)
 
     def job_selected(self):
         """

@@ -8,6 +8,11 @@ class AddTask(Task):
     id = 0
 
     def check_file_is_empty(self, filename):
+        """
+        Check if the file is empty
+        :param filename: Name of the CSV file
+        :return: True
+        """
         with open(filename, newline='') as csvfile:
             task_reader = csv.reader(csvfile, delimiter=',')
             rows = list(task_reader)
@@ -18,7 +23,12 @@ class AddTask(Task):
                 self.id = int(rows[-1][0])
 
     def add_new_entry(self):
-
+        """
+        Add new record to CSV / Database
+        Validate Date - Correct Format
+        Validate Spent Time - if it is an integer (minutes)
+        :return: Update the File
+        """
         task_date = input("Enter a date: ")
         try:
             datetime.datetime.strptime(task_date, '%Y/%m/%d')

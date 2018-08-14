@@ -11,6 +11,11 @@ class SearchTask(Task):
     SEARCH_CHOICES = {1: "Date", 2: "Time Spent", 3: "Exact Match", 4: "Pattern", 5: "Main Menu"}
 
     def __init__(self, selection = 0):
+        """
+        Initialize Menu Selection
+        Based on the selection route the user to each method
+        :param selection:
+        """
         self.main_menu()
         self.selection = input("Which search you would like to perform?: ")
         try:
@@ -34,12 +39,25 @@ class SearchTask(Task):
                 SearchTask()
 
     def main_menu(self):
+        """
+        Display Main Menu on the screen with selection
+        :return: Menu being displayed
+        """
         print("Welcome to Search.")
         for key, value in self.SEARCH_CHOICES.items():
             print(str(key) + ". " + value)
 
     def edit_record(self, id):
-
+        """
+        Edit record
+        Validate Date
+        Validate time spent if it is an integer
+        Since you cannot update files like Database
+        It will create a Temp file and put everything into temp file
+        Replace original with temp
+        :param id: ID of the record being edited
+        :return: Updated CSV file
+        """
         task_date = input("Enter a date, Format YYYY-MM-DD: ")
         try:
             datetime.datetime.strptime(task_date, '%Y/%m/%d')
@@ -66,7 +84,7 @@ class SearchTask(Task):
                     writer = csv.DictWriter(tempfile, fieldnames=fields)
                     for row in reader:
                         if row['ID'] == str(id):
-                            print('Updating row with ID ' + row['ID'] + ' , please wait')
+                            # print('Updating row with ID ' + row['ID'] + ' , please wait')
                             row['Task Date'], row['Task Title'], row['Time Spent'], row[
                                 'Task Notes'] = task_date, task_title, task_time_spent, task_notes
                             row = {'ID': row['ID'], 'Task Date': row['Task Date'], 'Task Title': row['Task Title'],
@@ -79,21 +97,13 @@ class SearchTask(Task):
                 SearchTask()
 
     def delete_record(self, id):
-
         """
-        # TO DO: Upgrade it to version that have validation questions
-        # has an issue stacking frames if you type different key multiple times
-        # 5x times press x - 5x will replace the file
-        question = input("You are about to delete a record, are you sure? ")
-        if question == "n":
-            SearchTask()
-        elif question == "y":
-            pass
-        else:
-            print("Your input is invalid, please choose from the following again.")
-            self.delete_record(id)
+        Delete record from the CSV
+        Create temp file store everything except the record with ID
+        Replace original with the temp file
+        :param id: ID of the record being deleted
+        :return: New CSV file
         """
-
         tempfile = NamedTemporaryFile(mode='w', delete=False)
 
         fields = ['ID', 'Task Date', 'Task Title', 'Time Spent', 'Task Notes']
@@ -116,7 +126,31 @@ class SearchTask(Task):
         print("Record ID " + deleted_one['ID'] + " called [" + deleted_one['Task Title'] + "], was successfully deleted.")
         SearchTask()
 
+        """
+            # TO DO: Upgrade it to version that have validation questions
+            # has an issue stacking frames if you type different key multiple times
+            # 5x times press x - 5x will replace the file
+            question = input("You are about to delete a record, are you sure? ")
+            if question == "n":
+               SearchTask()
+            elif question == "y":
+               pass
+            else:
+               print("Your input is invalid, please choose from the following again.")
+               self.delete_record(id)
+        """
+
     def crud(self, action, record_id, step, data_dict):
+        """
+        CREATE, READ, UPDATE, DELETE
+        Direct user based on selection to each method
+        :param action: Selection
+        :param record_id: ID of the record
+        :param step: When showing results remembering where I was
+        :param data_dict: Results dictionary having records that has been found
+        :return: Direct user based on selection to each method
+        """
+
         if action == "n" and step < len(data_dict):
             self.clear_screen()
             return True
@@ -137,6 +171,12 @@ class SearchTask(Task):
             self.show_results(data_dict, message)
 
     def show_results(self, data_dict, message):
+        """
+        Showing results from each method
+        :param data_dict: Results dictionary having records that has been found
+        :param message: Result message
+        :return: Display results and route user next
+        """
         self.clear_screen()
         self.message = message
         step = 0
@@ -172,6 +212,12 @@ class SearchTask(Task):
                 SearchTask()
 
     def perform_csv_search(self, header, search_data):
+        """
+        Search for all methods being used to perform search based on input
+        :param header: Header of the CSV file being edited
+        :param search_data: Data that are being searched
+        :return: Route method to show results
+        """
         data_dict = {}
         with open(self.filename, newline='') as csvfile:
             task_reader = csv.DictReader(csvfile, delimiter=',')
@@ -191,6 +237,10 @@ class SearchTask(Task):
         self.show_results(data_dict, message)
 
     def search_by_date(self):
+        """
+        Searching by valid date
+        :return: Route method to show results
+        """
         search_data = input("What date you looking for? Format YYYY-MM-DD: ")
         try:
             datetime.datetime.strptime(search_data, '%Y/%m/%d')
@@ -202,6 +252,10 @@ class SearchTask(Task):
             self.perform_csv_search(header, search_data)
 
     def search_by_time_spent(self):
+        """
+        Searching by valid time spent
+        :return: Route method to show results
+        """
         search_data = input("What time you looking for?: ")
         try:
             int(search_data)
@@ -213,12 +267,20 @@ class SearchTask(Task):
             self.perform_csv_search(header, search_data)
 
     def search_by_exact_match(self):
+        """
+        Searching by regex to find exact match
+        :return: Route method to show results
+        """
         search_data = input("Enter a string you looking for: ")
         search_data = r'\b{0}\b'.format(search_data)
         header = ["Task Notes", "Task Title"]
         self.perform_csv_search(header, search_data)
 
     def search_by_pattern(self):
+        """
+        Searching by regex valid pattern
+        :return: Route method to show results
+        """
         search_data = input("Enter pattern: ")
         try:
             re.compile(search_data)
