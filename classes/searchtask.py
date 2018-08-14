@@ -6,11 +6,12 @@ from tempfile import NamedTemporaryFile
 
 from classes.task import Task
 
+
 class SearchTask(Task):
 
     SEARCH_CHOICES = {1: "Date", 2: "Time Spent", 3: "Exact Match", 4: "Pattern", 5: "Main Menu"}
 
-    def __init__(self, selection = 0):
+    def __init__(self, selection=0):
         """
         Initialize Menu Selection
         Based on the selection route the user to each method
@@ -31,7 +32,7 @@ class SearchTask(Task):
             elif search_selection == 3:
                 self.search_by_exact_match()
             elif search_selection == 4:
-                 self.search_by_pattern()
+                self.search_by_pattern()
             elif search_selection == 5:
                 self.clear_screen()
             else:
@@ -88,7 +89,7 @@ class SearchTask(Task):
                             row['Task Date'], row['Task Title'], row['Time Spent'], row[
                                 'Task Notes'] = task_date, task_title, task_time_spent, task_notes
                             row = {'ID': row['ID'], 'Task Date': row['Task Date'], 'Task Title': row['Task Title'],
-                               'Time Spent': row['Time Spent'], 'Task Notes': row['Task Notes']}
+                                'Time Spent': row['Time Spent'], 'Task Notes': row['Task Notes']}
                         writer.writerow(row)
 
                 shutil.move(tempfile.name, self.filename)
@@ -119,7 +120,7 @@ class SearchTask(Task):
                     writer.writerow(row)
                 else:
                     deleted_one = {'ID': row['ID'], 'Task Date': row['Task Date'], 'Task Title': row['Task Title'],
-                           'Time Spent': row['Time Spent'], 'Task Notes': row['Task Notes']}
+                            'Time Spent': row['Time Spent'], 'Task Notes': row['Task Notes']}
 
         shutil.move(tempfile.name, self.filename)
         self.clear_screen()

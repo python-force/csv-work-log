@@ -1,5 +1,6 @@
 import os
 
+
 class Task:
     filename = "work-log.csv"
 

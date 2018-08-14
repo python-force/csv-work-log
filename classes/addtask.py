@@ -3,6 +3,7 @@ import csv
 
 from classes.task import Task
 
+
 class AddTask(Task):
 
     id = 0
