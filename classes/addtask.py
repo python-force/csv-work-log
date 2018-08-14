@@ -30,65 +30,69 @@ class AddTask(Task):
         Validate Spent Time - if it is an integer (minutes)
         :return: Update the File
         """
-        task_date = input("Enter a date: ")
-        try:
-            datetime.datetime.strptime(task_date, '%Y/%m/%d')
-        except:
-            print("Date you specified is not valid, please try again.")
-            self.add_new_entry()
-        else:
-            task_title = input("Enter a title: ")
-            task_time_spent = input("Enter time spent: ")
+        while True:
             try:
-                int(task_time_spent)
+                task_date = input("Enter a date: ")
+                datetime.datetime.strptime(task_date, '%Y/%m/%d')
+                while True:
+                    try:
+                        task_title = input("Enter a title: ")
+                        task_time_spent = input("Enter time spent: ")
+                        int(task_time_spent)
+                        task_notes = input("Enter a notes: ")
+                    except:
+                        print("Your selection is not a number, please try again: ")
+                        continue
+                    else:
+                        break
             except:
-                print("Your selection is not a number, please try again: ")
-                self.add_new_entry()
+                print("Date you specified is not valid, please try again.")
+                continue
             else:
-                task_notes = input("Enter a notes: ")
+                break
 
-                with open('work-log.csv', 'a') as csvfile:
-                    field_names = ['ID',
-                                   'Task Date',
-                                   'Task Title',
-                                   'Time Spent',
-                                   'Task Notes']
-                    
-                    task_writer = csv.DictWriter(csvfile, fieldnames=field_names)
+        with open('work-log.csv', 'a') as csvfile:
+            field_names = ['ID',
+                           'Task Date',
+                           'Task Title',
+                           'Time Spent',
+                           'Task Notes']
 
-                    if self.check_file_is_empty(self.filename):
-                        task_writer.writeheader()
-                        task_writer.writerow({
-                            'ID': self.id,
-                            'Task Date': task_date,
-                            'Task Title': task_title,
-                            'Time Spent': task_time_spent,
-                            'Task Notes': task_notes
-                        })
-                    else:
-                        task_writer.writerow({
-                            'ID': self.id + 1,
-                            'Task Date': task_date,
-                            'Task Title': task_title,
-                            'Time Spent': task_time_spent,
-                            'Task Notes': task_notes
-                        })
+            task_writer = csv.DictWriter(csvfile, fieldnames=field_names)
 
-                    """
-                    # TO DO
-                    # Refactor above the script to this
-                    data = OrderedDict([
-                        ('ID', self.id),
-                        ('Task Date', task_date),
-                        ('Task Title', task_title),
-                        ('Time Spent', task_time_spent),
-                        ('Task Notes', task_notes)
-                    ])
+            if self.check_file_is_empty(self.filename):
+                task_writer.writeheader()
+                task_writer.writerow({
+                    'ID': self.id,
+                    'Task Date': task_date,
+                    'Task Title': task_title,
+                    'Time Spent': task_time_spent,
+                    'Task Notes': task_notes
+                })
+            else:
+                task_writer.writerow({
+                    'ID': self.id + 1,
+                    'Task Date': task_date,
+                    'Task Title': task_title,
+                    'Time Spent': task_time_spent,
+                    'Task Notes': task_notes
+                })
 
-                    if self.check_file_is_empty(self.filename):
-                        task_writer.writeheader()
-                        task_writer.writerow(data)
-                    else:
-                        data['ID'] += 1  # increment the ID
-                        task_writer.writerow(data)
-                    """
+            """
+            # TO DO
+            # Refactor above the script to this
+            data = OrderedDict([
+                ('ID', self.id),
+                ('Task Date', task_date),
+                ('Task Title', task_title),
+                ('Time Spent', task_time_spent),
+                ('Task Notes', task_notes)
+            ])
+
+            if self.check_file_is_empty(self.filename):
+                task_writer.writeheader()
+                task_writer.writerow(data)
+            else:
+                data['ID'] += 1  # increment the ID
+                task_writer.writerow(data)
+            """
