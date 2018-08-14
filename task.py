@@ -86,6 +86,27 @@ class AddTask(Task):
                     field_names = ['ID', 'Task Date', 'Task Title', 'Time Spent', 'Task Notes']
                     task_writer = csv.DictWriter(csvfile, fieldnames=field_names)
 
+                    if self.check_file_is_empty(self.filename):
+                        task_writer.writeheader()
+                        task_writer.writerow({
+                            'ID': self.id,
+                            'Task Date': task_date,
+                            'Task Title': task_title,
+                            'Time Spent': task_time_spent,
+                            'Task Notes': task_notes
+                        })
+                    else:
+                        task_writer.writerow({
+                            'ID': self.id + 1,
+                            'Task Date': task_date,
+                            'Task Title': task_title,
+                            'Time Spent': task_time_spent,
+                            'Task Notes': task_notes
+                        })
+
+                    """
+                    # TO DO
+                    # Refactor above the script to this
                     data = OrderedDict([
                         ('ID', self.id),
                         ('Task Date', task_date),
@@ -100,7 +121,7 @@ class AddTask(Task):
                     else:
                         data['ID'] += 1  # increment the ID
                         task_writer.writerow(data)
-
+                    """
 
 class SearchTask(Task):
 
@@ -125,7 +146,6 @@ class SearchTask(Task):
                  self.search_by_pattern()
             elif search_selection == 5:
                 self.clear_screen()
-                Task().job_selected()
             elif search_selection == 6:
                 self.job_selected()
             else:

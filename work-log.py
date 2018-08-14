@@ -17,8 +17,6 @@ if __name__ == '__main__':
 
             if i == 1:
                 AddTask().add_new_entry()
-                Task()
-                print("Record successfully added.")
             elif i == 2:
                 Task().clear_screen()
                 SearchTask()
