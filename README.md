@@ -23,7 +23,7 @@ Will Add record to the CSV
 ###  Features:
 
 1. Entries can be deleted and edited, letting user change the date, task name, time spent, and/or notes.
-2. Entries can be searched for and found based on a date range. For example between 01/01/2016 and 12/31/2016.
+2. Entries can be searched for and found based on a date range. For example between 01/01/1867 and 12/31/2049.
 3. Entries are displayed one at a time with the ability to page through records (previous/next/back).
 
 ### Results
