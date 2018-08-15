@@ -1,5 +1,6 @@
 import datetime
 import csv
+import time
 
 from classes.task import Task
 
@@ -8,27 +9,12 @@ class AddTask(Task):
 
     id = 0
 
-    def check_file_is_empty(self, filename):
+    def __init__(self, *args, **kwargs):
         """
-        Check if the file is empty
-        :param filename: Name of the CSV file
-        :return: True
-        """
-        with open(filename, newline='') as csvfile:
-            task_reader = csv.reader(csvfile, delimiter=',')
-            rows = list(task_reader)
-            if len(rows) == 1 and rows[0] == []:
-                self.id = 1
-                return True
-            else:
-                self.id = int(rows[-1][0])
-
-    def add_new_entry(self):
-        """
-        Add new record to CSV / Database
         Validate Date - Correct Format
         Validate Spent Time - if it is an integer (minutes)
-        :return: Update the File
+        :param args: 
+        :param kwargs:
         """
         while True:
             try:
@@ -51,6 +37,28 @@ class AddTask(Task):
             else:
                 break
 
+        self.add_new_entry(task_date, task_title, task_time_spent, task_notes)
+
+    def check_file_is_empty(self, filename):
+        """
+        Check if the file is empty
+        :param filename: Name of the CSV file
+        :return: True
+        """
+        with open(filename, newline='') as csvfile:
+            task_reader = csv.reader(csvfile, delimiter=',')
+            rows = list(task_reader)
+            if len(rows) == 1 and rows[0] == []:
+                self.id = 1
+                return True
+            else:
+                self.id = int(rows[-1][0])
+
+    def add_new_entry(self, task_date, task_title, task_time_spent, task_notes):
+        """
+        Add new record to CSV / Database
+        :return: Update the File
+        """
         with open('work-log.csv', 'a') as csvfile:
             field_names = ['ID',
                            'Task Date',
@@ -96,3 +104,10 @@ class AddTask(Task):
                 data['ID'] += 1  # increment the ID
                 task_writer.writerow(data)
             """
+        self.clear_screen()
+        print("Adding " + task_date)
+        print("Adding " + task_title)
+        print("Adding " + task_time_spent)
+        print("Adding " + task_notes)
+        print("Record successfully saved. Loading menu...")
+        time.sleep(5)

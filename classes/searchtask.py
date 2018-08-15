@@ -19,28 +19,30 @@ class SearchTask(Task):
         :param selection:
         """
         self.main_menu()
-        self.selection = input("Which search you would like to perform?: ")
-        try:
-            search_selection = int(self.selection)
-        except ValueError:
-            print("Your selection is invalid, please try again")
-            SearchTask()
-        else:
-            if search_selection == 1:
-                self.search_by_date()
-            if search_selection == 2:
-                self.search_by_date_range()
-            elif search_selection == 3:
-                self.search_by_time_spent()
-            elif search_selection == 4:
-                self.search_by_exact_match()
-            elif search_selection == 5:
-                self.search_by_pattern()
-            elif search_selection == 6:
-                self.clear_screen()
-            else:
+        while True:
+            try:
+                self.selection = input("Which search you would like to perform?: ")
+                search_selection = int(self.selection)
+            except:
                 print("Your selection is invalid, please try again")
-                SearchTask()
+                continue
+            else:
+                break
+
+        if search_selection == 1:
+            self.search_by_date()
+        if search_selection == 2:
+            self.search_by_date_range()
+        elif search_selection == 3:
+            self.search_by_time_spent()
+        elif search_selection == 4:
+            self.search_by_exact_match()
+        elif search_selection == 5:
+            self.search_by_pattern()
+        elif search_selection == 6:
+            self.clear_screen()
+        else:
+            print("Really?")
 
     def main_menu(self):
         """
@@ -148,9 +150,8 @@ class SearchTask(Task):
 
         shutil.move(tempfile.name, self.filename)
         self.clear_screen()
-        print("Record ID " + deleted_one['ID'] + " called [" +
-              deleted_one['Task Title'] + "], was successfully deleted.")
-        SearchTask()
+        # print("Record ID " + deleted_one['ID'] + " called [" +
+              # deleted_one['Task Title'] + "], was successfully deleted.")
 
     def crud(self, action, record_id, step, data_dict):
         """
@@ -166,9 +167,6 @@ class SearchTask(Task):
         if action == "n" and step < len(data_dict):
             self.clear_screen()
             return True
-        if action == "n" and step >= len(data_dict):
-            self.clear_screen()
-            SearchTask()
         elif action == "r":
             self.clear_screen()
             SearchTask()

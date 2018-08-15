@@ -18,7 +18,11 @@ if __name__ == '__main__':
         if isinstance(i, int):
 
             if i == 1:
-                AddTask().add_new_entry()
+                add_task = AddTask()
+                if add_task:
+                    print("Record was successfully added.")
+                else:
+                    print("You broke the app. Why?")
             elif i == 2:
                 Task().clear_screen()
                 SearchTask()
