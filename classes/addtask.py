@@ -26,12 +26,12 @@ class AddTask(Task):
                         task_time_spent = input("Enter time spent: ")
                         int(task_time_spent)
                         task_notes = input("Enter a notes: ")
-                    except:
+                    except ValueError:
                         print("Your selection is not a number, please try again: ")
                         continue
                     else:
                         break
-            except:
+            except ValueError:
                 print("Date you specified is not valid, please try again.")
                 continue
             else:

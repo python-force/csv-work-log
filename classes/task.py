@@ -45,5 +45,5 @@ class Task:
         try:
             int(selection)
             return True
-        except:
+        except ValueError:
             pass

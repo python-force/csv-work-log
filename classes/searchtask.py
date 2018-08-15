@@ -22,9 +22,10 @@ class SearchTask(Task):
             self.main_menu()
             while True:
                 try:
-                    self.selection = input("Which search you would like to perform?: ")
+                    self.selection = input("Which search you would "
+                                           "like to perform?: ")
                     search_selection = int(self.selection)
-                except:
+                except ValueError:
                     print("Your selection is invalid, please try again")
                     continue
                 else:
@@ -46,7 +47,6 @@ class SearchTask(Task):
             else:
                 self.clear_screen()
                 print("Your selection is invalid, please try again")
-
 
     def main_menu(self):
         """
@@ -78,12 +78,12 @@ class SearchTask(Task):
                         task_time_spent = input("Enter time spent: ")
                         int(task_time_spent)
                         task_notes = input("Enter a notes: ")
-                    except:
+                    except ValueError:
                         print("You need to enter the whole number.")
                         continue
                     else:
                         break
-            except:
+            except ValueError:
                 print("Date you specified is not valid, please try again.")
                 continue
             else:
@@ -268,7 +268,7 @@ class SearchTask(Task):
                 search_data = input("What date you looking for? "
                                     "Format YYYY/MM/DD: ")
                 datetime.datetime.strptime(search_data, '%Y/%m/%d')
-            except:
+            except ValueError:
                 print("Date you specified is not valid, please try again.")
                 continue
             else:
@@ -292,7 +292,7 @@ class SearchTask(Task):
                 end_date = input("What is your ending date? "
                                  "Format YYYY/MM/DD: ")
                 end_date = datetime.datetime.strptime(end_date, '%Y/%m/%d')
-            except:
+            except ValueError:
                 print("Date you specified is not valid, please try again.")
                 continue
             else:
@@ -310,8 +310,9 @@ class SearchTask(Task):
         while True:
             try:
                 search_data = int(input("What time you looking for?: "))
-            except:
-                print("Your selection is not a whole number, please try again: ")
+            except ValueError:
+                print("Your selection is not a whole number, "
+                      "please try again: ")
                 continue
             else:
                 break
@@ -342,7 +343,7 @@ class SearchTask(Task):
             try:
                 search_data = input("Enter pattern: ")
                 re.compile(search_data)
-            except:
+            except ValueError:
                 print("Your pattern is not valid, please try again.")
                 continue
             else:
