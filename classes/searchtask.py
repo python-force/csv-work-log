@@ -30,20 +30,23 @@ class SearchTask(Task):
                 else:
                     break
 
-            if search_selection == 1:
-                self.search_by_date()
-            if search_selection == 2:
-                self.search_by_date_range()
-            elif search_selection == 3:
-                self.search_by_time_spent()
-            elif search_selection == 4:
-                self.search_by_exact_match()
-            elif search_selection == 5:
-                self.search_by_pattern()
-            elif search_selection == 6:
-                break
+            if 1 <= search_selection <= 6:
+                if search_selection == 1:
+                    self.search_by_date()
+                if search_selection == 2:
+                    self.search_by_date_range()
+                elif search_selection == 3:
+                    self.search_by_time_spent()
+                elif search_selection == 4:
+                    self.search_by_exact_match()
+                elif search_selection == 5:
+                    self.search_by_pattern()
+                elif search_selection == 6:
+                    break
             else:
-                break
+                self.clear_screen()
+                print("Your selection is invalid, please try again")
+
 
     def main_menu(self):
         """
@@ -150,8 +153,8 @@ class SearchTask(Task):
 
         shutil.move(tempfile.name, self.filename)
         self.clear_screen()
-        # print("Record ID " + deleted_one['ID'] + " called [" +
-              # deleted_one['Task Title'] + "], was successfully deleted.")
+        print("Record ID " + deleted_one['ID'] + " called [" +
+              deleted_one['Task Title'] + "], was successfully deleted.")
 
     def crud(self, action, record_id, step, data_dict):
         """
