@@ -13,7 +13,7 @@ class AddTask(Task):
         """
         Validate Date - Correct Format
         Validate Spent Time - if it is an integer (minutes)
-        :param args: 
+        :param args:
         :param kwargs:
         """
         while True:
@@ -105,9 +105,9 @@ class AddTask(Task):
                 task_writer.writerow(data)
             """
         self.clear_screen()
-        print("Adding " + task_date)
-        print("Adding " + task_title)
-        print("Adding " + task_time_spent)
-        print("Adding " + task_notes)
+        print("Adding Date: " + task_date)
+        print("Adding Title: " + task_title)
+        print("Adding Time Spent: " + task_time_spent)
+        print("Adding Note: " + task_notes)
         print("Record successfully saved. Loading menu...")
         time.sleep(5)

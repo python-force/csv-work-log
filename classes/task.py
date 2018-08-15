@@ -31,7 +31,7 @@ class Task:
         :return:
         """
         self.menu()
-        selection = input("Hello Commander, what we doing today? "
+        selection = input("Welcome to Work Log, what we doing today? "
                           "Please choose a number: ")
         if self.check_selection(selection):
             return int(selection)

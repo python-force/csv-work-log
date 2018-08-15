@@ -1,14 +1,25 @@
 import time
+import os
 
 from classes.task import Task
 from classes.addtask import AddTask
 from classes.searchtask import SearchTask
 
+def clear_screen():
+    """
+    Clear screen
+    :return:
+    """
+    if os.system == "nt":
+        os.system('cls')
+    else:
+        os.system('clear')
+
 # Script doesn't execute when imported
 if __name__ == '__main__':
     # The script will keep running till the user is satisfied
     while True:
-        Task().clear_screen()
+        clear_screen()
 
         # job to do
         i = Task().job_selected()
@@ -18,16 +29,12 @@ if __name__ == '__main__':
         if isinstance(i, int):
 
             if i == 1:
-                add_task = AddTask()
-                if add_task:
-                    print("Record was successfully added.")
-                else:
-                    print("You broke the app. Why?")
+                AddTask()
             elif i == 2:
-                Task().clear_screen()
+                clear_screen()
                 SearchTask()
             elif i == 3:
-                Task().clear_screen()
+                clear_screen()
                 print("Thank you for using our Mars Data Log.")
                 break
 

@@ -18,31 +18,32 @@ class SearchTask(Task):
         Based on the selection route the user to each method
         :param selection:
         """
-        self.main_menu()
         while True:
-            try:
-                self.selection = input("Which search you would like to perform?: ")
-                search_selection = int(self.selection)
-            except:
-                print("Your selection is invalid, please try again")
-                continue
+            self.main_menu()
+            while True:
+                try:
+                    self.selection = input("Which search you would like to perform?: ")
+                    search_selection = int(self.selection)
+                except:
+                    print("Your selection is invalid, please try again")
+                    continue
+                else:
+                    break
+
+            if search_selection == 1:
+                self.search_by_date()
+            if search_selection == 2:
+                self.search_by_date_range()
+            elif search_selection == 3:
+                self.search_by_time_spent()
+            elif search_selection == 4:
+                self.search_by_exact_match()
+            elif search_selection == 5:
+                self.search_by_pattern()
+            elif search_selection == 6:
+                break
             else:
                 break
-
-        if search_selection == 1:
-            self.search_by_date()
-        if search_selection == 2:
-            self.search_by_date_range()
-        elif search_selection == 3:
-            self.search_by_time_spent()
-        elif search_selection == 4:
-            self.search_by_exact_match()
-        elif search_selection == 5:
-            self.search_by_pattern()
-        elif search_selection == 6:
-            self.clear_screen()
-        else:
-            print("Really?")
 
     def main_menu(self):
         """
@@ -115,7 +116,6 @@ class SearchTask(Task):
         shutil.move(tempfile.name, self.filename)
         self.clear_screen()
         print("Your record was successfuly saved.")
-        SearchTask()
 
     def delete_record(self, id):
         """
@@ -169,12 +169,9 @@ class SearchTask(Task):
             return True
         elif action == "r":
             self.clear_screen()
-            SearchTask()
         elif action == "e":
-            self.clear_screen()
             self.edit_record(record_id)
         elif action == "d":
-            self.clear_screen()
             self.delete_record(record_id)
         else:
             message = "Your selection was invalid please try again: "
