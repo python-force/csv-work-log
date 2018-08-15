@@ -79,8 +79,7 @@ class SearchTask(Task):
                         int(task_time_spent)
                         task_notes = input("Enter a notes: ")
                     except:
-                        print("Date you specified is not valid, "
-                              "please try again.")
+                        print("You need to enter the whole number.")
                         continue
                     else:
                         break
@@ -312,7 +311,7 @@ class SearchTask(Task):
             try:
                 search_data = int(input("What time you looking for?: "))
             except:
-                print("Your selection is not a number, please try again: ")
+                print("Your selection is not a whole number, please try again: ")
                 continue
             else:
                 break

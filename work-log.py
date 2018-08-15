@@ -28,15 +28,22 @@ if __name__ == '__main__':
         # route user to each Class methods
         if isinstance(i, int):
 
-            if i == 1:
-                AddTask()
-            elif i == 2:
-                clear_screen()
-                SearchTask()
-            elif i == 3:
-                clear_screen()
-                print("Thank you for using our Mars Data Log.")
-                break
+            if 1 <= i <= 3:
+                if i == 1:
+                    AddTask()
+                elif i == 2:
+                    clear_screen()
+                    SearchTask()
+                elif i == 3:
+                    clear_screen()
+                    print("Thank you for using our Mars Data Log.")
+                    break
+            else:
+                # The selection is not a number, delay for 3 secs
+                # with explanation and ask again
+                print("That choice is not in the binder, "
+                      "please try again. Loading menu...")
+                time.sleep(3)
 
         else:
             # The selection is not a number, delay for 3 secs
